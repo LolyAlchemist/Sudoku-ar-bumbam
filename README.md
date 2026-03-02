@@ -3,7 +3,7 @@
 - Sudoku ar bumbam
 Norādījumi:
 * Lai spēle funkcionētu jāinstalē-
-python
+python,
 pip install pygame
 
 
