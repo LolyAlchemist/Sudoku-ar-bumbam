@@ -212,7 +212,9 @@ class Grid:
             self.bomb_feedback = "Abi nepareizi"
             self.bomb_feedback_color = (109, 208, 125)
 
-        self.check_win()
+        if self.check_grids() and all(self.bomb_cell_correct.get(b, False) for b in self.bombs):
+                self.win = True
+                self.restart_allowed = True
 
     def draw_all(self, pg, surface):
         self.__draw_lines(pg, surface)

@@ -81,6 +81,7 @@ while run:
         if quit_button.draw(screen):
             run = False
 
+
     elif state == "game":
         scroll.blit(game_bg, (0, 0))
         grid.draw_all(pygame, scroll)
@@ -141,9 +142,7 @@ while run:
             scroll.blit(surface, (20, y))
             y += 35
 
-        mouse_pos = pygame.mouse.get_pos()
-        adjusted_mouse_pos = (mouse_pos[0], mouse_pos[1] + scroll_offset)
-        if back_button.draw(scroll, adjusted_mouse_pos):
+        if back_button.draw(scroll):
             state = "menu"
 
         screen.blit(scroll, (0, -scroll_offset))
