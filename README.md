@@ -1,6 +1,12 @@
 # Projekta darbs
 **Spēles koncepta realizācija izmantojot python.**
 - Sudoku ar bumbam
+Norādījumi:
+* Lai spēle funkcionētu jāinstalē-
+python
+pip install pygame
+
+
 Noteikumi:  
 
 *Spēlē ir spēkā klasiskie Sudoku noteikumi. 
