@@ -2,6 +2,7 @@ from random import sample
 from selection import SelectNumber
 from copy import deepcopy
 import random
+import os
 
 
 SUB_GRID_SIZE = 3
@@ -62,7 +63,7 @@ class Grid:
 
         self.selection = SelectNumber(pygame, self.game_font)
 
-        self.bomb_img = pygame.image.load("Untitled45_20260113225822.png").convert_alpha()
+        self.bomb_img = pygame.image.load(os.path.join("pics","Untitled45_20260113225822.png")).convert_alpha()
         self.bomb_img = pygame.transform.scale(self.bomb_img, (50, 50))
 
         self.bombs = []

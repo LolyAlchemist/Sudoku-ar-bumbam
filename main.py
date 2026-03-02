@@ -5,6 +5,7 @@ import button
 from grid import Grid
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "%d,%d" % (100, 25)
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 pygame.init()
 
 SCREEN_WIDTH = 1200
@@ -19,15 +20,15 @@ game_font2 = pygame.font.SysFont("Arial", 20)
 
 grid = Grid(pygame, game_font)
 
-game_bg = pygame.image.load("Untitled46_20260113230129.png").convert()
-menu_bg = pygame.image.load("menu.png").convert()
-tutorial_bg = pygame.image.load("noteik.png").convert()
+game_bg = pygame.image.load("pics/Untitled46_20260113230129.png").convert()
+menu_bg = pygame.image.load("pics/menu.png").convert()
+tutorial_bg = pygame.image.load("pics/noteik.png").convert()
 
 
-start_img = pygame.image.load("spele.png").convert_alpha()
-quit_img = pygame.image.load("iziet.png").convert_alpha()
-tuto_img = pygame.image.load("noteikumi.png").convert_alpha()
-back_img = pygame.image.load("atpakal.png").convert_alpha()
+start_img = pygame.image.load("pics/spele.png").convert_alpha()
+quit_img = pygame.image.load("pics/iziet.png").convert_alpha()
+tuto_img = pygame.image.load("pics/noteikumi.png").convert_alpha()
+back_img = pygame.image.load("pics/atpakal.png").convert_alpha()
 
 start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
@@ -124,7 +125,7 @@ while run:
     "* Jāievada skaitlis no 1 līdz 9, kas atbilst bumbas vietai sudoku 3x3 apakšrežģī.",
     "",
     "* Lai pārietu uz nākamo bumbu (B1 vai B2), jānospiež TAB.",
-    "* Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER.",
+    "* Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER (Beigās).",
     "",
     "ZAUDĒJUMA NOSACĪJUMI:",
     "* Spēle tiek zaudēta, ja nav ieavadītas bumbas, abas vai viena ir nepareiza.",
