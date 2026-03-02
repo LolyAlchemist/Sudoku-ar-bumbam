@@ -9,25 +9,25 @@ Norādījumi:
 
 Noteikumi:  
 
-*Spēlē ir spēkā klasiskie Sudoku noteikumi. 
+* Spēlē ir spēkā klasiskie Sudoku noteikumi. 
 
-*Spēlē ir noteikts fiksēts bumbu skaits (2 bumbas) 
+* Spēlē ir noteikts fiksēts bumbu skaits (2 bumbas) 
 
-*Sudoku laukumā ir redzamas bumbu atrašanās vietas. 
+* Sudoku laukumā ir redzamas bumbu atrašanās vietas. 
 
-*Katra bumba ir apzīmēta ar B1 vai B2. 
+* Katra bumba ir apzīmēta ar B1 vai B2. 
 
-*Zem Sudoku spēles lauka atrodas ievades lauks bumbu cipariem. 
+* Zem Sudoku spēles lauka atrodas ievades lauks bumbu cipariem. 
 
-*Spēlētājam jāievada skaitlis no 1 līdz 9, kas atbilst bumbas atrašanās vietai attiecīgajā 3×3 apakšrežģī. 
+* Spēlētājam jāievada skaitlis no 1 līdz 9, kas atbilst bumbas atrašanās vietai attiecīgajā 3×3 apakšrežģī. 
 
-*Lai pārslēgtos starp bumbām (B1 un B2), jānospiež TAB taustiņš. 
+* Lai pārslēgtos starp bumbām (B1 un B2), jānospiež TAB taustiņš. 
 
-*Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER taustiņš. 
+* Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER taustiņš. 
 
 Zaudējuma nosacijumi: 
 
-*Spēle tiek zaudēta, ja nav ieavadītas bumbas, abas vai viena ir nepareiza. 
+* Spēle tiek zaudēta, ja nav ieavadītas bumbas, abas vai viena ir nepareiza. 
 
 Uzvaras nosacijumi: 
 
