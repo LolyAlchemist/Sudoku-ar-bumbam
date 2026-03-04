@@ -1,3 +1,5 @@
+# ok
+
 # Projekta darbs
 **Spēles koncepta realizācija izmantojot python.**
 - Sudoku ar bumbam
