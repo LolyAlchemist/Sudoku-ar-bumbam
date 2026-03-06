@@ -40,7 +40,7 @@ def create_grid(sub_grid: int) -> list[list]:
 
 def remove_numbers(grid: list[list]) -> None:
     num_of_cells = GRID_SIZE * GRID_SIZE
-    empties = num_of_cells * 3 // 30
+    empties = num_of_cells * 3 // 7
     for i in sample(range(num_of_cells), empties):
         grid[i // GRID_SIZE][i % GRID_SIZE] = 0
 
