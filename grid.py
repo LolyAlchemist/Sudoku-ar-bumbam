@@ -257,9 +257,9 @@ class Grid:
         sudoku_complete = self.check_grids()
         bombs_correct = all(self.bomb_cell_correct.get(b, False) for b in self.bombs)
         self.win = sudoku_complete and bombs_correct
-<<<<<<< HEAD
+
         self.game_over = True
-=======
->>>>>>> 254410faa75ee0dac58a2aaed6528a0b50e67e8c
+
+
         if self.win:
             self.restart_allowed = True
