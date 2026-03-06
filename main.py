@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 pygame.init()
 
 SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 1200
+SCREEN_HEIGHT = 800
 SCROLL_HEIGHT = 1400
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -34,6 +34,7 @@ start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
 tuto_button = button.Button(450, 300, tuto_img, 2)
 back_button = button.Button(450, 650, back_img, 2)
+game_back_button = button.Button(0, 1020, back_img, 2)
 
 state = "menu"
 run = True
@@ -51,17 +52,7 @@ while run:
 
         if state == "game":
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
-                    grid.active_bomb_input = (grid.active_bomb_input + 1) % 2
-                elif event.unicode.isdigit():
-                    i = grid.active_bomb_input
-                    grid.bomb_answers[i] = event.unicode
-                elif event.key == pygame.K_BACKSPACE:
-                    i = grid.active_bomb_input
-                    grid.bomb_answers[i] = ""
-                elif event.key == pygame.K_RETURN:
-                    grid.submit_bomb_answer()
-                elif event.key == pygame.K_SPACE and getattr(grid, "restart_allowed", False):
+                if event.key == pygame.K_SPACE and getattr(grid, "restart_allowed", False):
                     grid.restart()
                     grid.restart_allowed = False
 
@@ -84,7 +75,7 @@ while run:
 
     elif state == "game":
         scroll.blit(game_bg, (0, 0))
-        grid.draw_all(pygame, scroll)
+        grid.draw_all(pygame, scroll, scroll_offset)
 
         sudoku_complete = grid.check_grids()
         bombs_correct = all(grid.bomb_cell_correct.get(b, False) for b in grid.bombs)
@@ -92,21 +83,26 @@ while run:
 
         grid.restart_allowed = False
 
-        if sudoku_complete and bombs_correct:
-            grid.win = True
+        if grid.game_over:
             grid.restart_allowed = True
-            won_surface = game_font2.render("Tu uzvarēji!", False, (0, 255, 0))
-            press_space_surf = game_font2.render("Spied space, lai restartētu.", False, (0, 255, 200))
-            scroll.blit(won_surface, (956, 650))
-            scroll.blit(press_space_surf, (920, 670))
+            if grid.win:
+                won_surface = game_font2.render("Tu uzvarēji!", False, (0, 255, 0))
+                press_space_surf = game_font2.render("Spied space, lai restartētu.", False, (0, 255, 200))
+                scroll.blit(won_surface, (0, 960))
+                scroll.blit(press_space_surf, (0, 985))
+            else:
+                fail_surface = game_font2.render("Kļūda! Restartē.", False, (255, 0, 0))
+                press_space_surf = game_font2.render("Spied space, lai restartētu.", False, (255, 80, 80))
+                scroll.blit(fail_surface, (0, 960))
+                scroll.blit(press_space_surf, (0, 985))
 
-        elif bombs_wrong:
-            grid.win = False
-            grid.restart_allowed = True
-            fail_surface = game_font2.render("Kļūda bombā! Restartē.", False, (255, 0, 0))
-            press_space_surf = game_font2.render("Spied space, lai restartētu.", False, (255, 80, 80))
-            scroll.blit(fail_surface, (920, 650))
-            scroll.blit(press_space_surf, (920, 670))
+        adjusted_mouse = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] + scroll_offset)
+        if game_back_button.draw(scroll, adjusted_mouse):
+            state = "menu"
+            grid.restart()
+            start_button.clicked = True
+            quit_button.clicked = True
+            tuto_button.clicked = True
 
         screen.blit(scroll, (0, -scroll_offset))
         scrollbar.draw(screen)
@@ -122,14 +118,12 @@ while run:
     "* Sudoku laukā ir redzamas bumbu atrašanās vietas.",
     "* Katrai bumbai ir norādīts, vai tā ir B1 vai B2.",
     "",
-    "* Zem sudoku lauka ir ievades vieta bumbu ciparam.",
+    "* Pie sudoku lauka ir ievades vieta bumbu ciparam.",
     "* Jāievada skaitlis no 1 līdz 9, kas atbilst bumbas vietai sudoku 3x3 apakšrežģī.",
     "",
-    "* Lai pārietu uz nākamo bumbu (B1 vai B2), jānospiež TAB.",
-    "* Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER (Beigās).",
     "",
     "ZAUDĒJUMA NOSACĪJUMI:",
-    "* Spēle tiek zaudēta, ja nav ieavadītas bumbas, abas vai viena ir nepareiza.",
+    "* Spēle tiek zaudēta, ja nav pareizi ieavadīta vismas 1 bumba, sudoku laukā ir nepareizi ievadīti skaitļi.",
     "",
     "UZVARAS NOSACĪJUMI:",
     "* Spēle tiek uzvarēta, ja visi sudoku lauciņi ir aizpildīti pareizi",
@@ -142,8 +136,12 @@ while run:
             scroll.blit(surface, (20, y))
             y += 35
 
-        if back_button.draw(scroll):
+        adjusted_mouse_tuto = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] + scroll_offset)
+        if back_button.draw(scroll, adjusted_mouse_tuto):
             state = "menu"
+            start_button.clicked = True
+            quit_button.clicked = True
+            tuto_button.clicked = True
 
         screen.blit(scroll, (0, -scroll_offset))
         scrollbar.draw(screen)

@@ -1,5 +1,5 @@
 from random import sample
-from selection import SelectNumber
+from selection import SelectNumber, BombSelect
 from copy import deepcopy
 import random
 import os
@@ -55,6 +55,7 @@ class Grid:
 
         self.win = False
         self.restart_allowed = False
+        self.game_over = False
 
         self.game_font = font
 
@@ -62,6 +63,7 @@ class Grid:
         self.occupied_cell_coordinates = self.pre_occupied_cells()
 
         self.selection = SelectNumber(pygame, self.game_font)
+        self.bomb_select = BombSelect(pygame, self.game_font)
 
         self.bomb_img = pygame.image.load(os.path.join("pics","Untitled45_20260113225822.png")).convert_alpha()
         self.bomb_img = pygame.transform.scale(self.bomb_img, (50, 50))
@@ -69,11 +71,9 @@ class Grid:
         self.bombs = []
         self.generate_bombs()
 
-        self.bomb_answers = ["", ""]
         self.bomb_cell_correct = {}
         self.bomb_feedback = ""
         self.bomb_feedback_color = (255, 255, 255)
-        self.active_bomb_input = 0
 
     def restart(self) -> None:
         self.grid = create_grid(SUB_GRID_SIZE)
@@ -82,8 +82,9 @@ class Grid:
         self.occupied_cell_coordinates = self.pre_occupied_cells()
 
         self.win = False
+        self.game_over = False
         self.generate_bombs()
-        self.bomb_answers = ["", ""]
+        self.bomb_select.reset()
         self.bomb_cell_correct.clear()
         self.bomb_feedback = ""
 
@@ -97,7 +98,18 @@ class Grid:
     def is_cell_preoccupied(self, x: int, y: int) -> bool:
         return (y, x) in self.occupied_cell_coordinates
 
+    def is_grid_full(self) -> bool:
+        bomb_set = set(self.bombs)
+        for row in range(9):
+            for col in range(9):
+                if (row, col) not in bomb_set and self.grid[row][col] == 0:
+                    return False
+        return True
+
     def get_mouse_click(self, x: int, y: int) -> None:
+        if self.game_over:
+            return
+
         if x <= self.cell_size * 9 and y <= self.cell_size * 9:
             grid_x, grid_y = x // self.cell_size, y // self.cell_size
             if not self.is_cell_preoccupied(grid_x, grid_y):
@@ -105,7 +117,10 @@ class Grid:
 
         self.selection.button_clicked(x, y)
 
-        if self.check_grids():
+        bomb_both_set = self.bomb_select.button_clicked(x, y)
+        
+        bombs_answered = self.bomb_select.bomb_answers[0] != 0 and self.bomb_select.bomb_answers[1] != 0
+        if bombs_answered and self.is_grid_full():
             self.check_win()
 
     def pre_occupied_cells(self) -> list[tuple]:
@@ -142,7 +157,7 @@ class Grid:
 
                     if (y, x) in self.bomb_cell_correct:
                         correct = self.bomb_cell_correct[(y, x)]
-                        entered = self.bomb_answers[bomb_index]
+                        entered = self.bomb_select.bomb_answers[bomb_index]
                         if entered and (not correct or self.win):
                             color = (0, 255, 0) if correct else (255, 0, 0)
                             num_surface = self.game_font.render(str(self.__test_grid[y][x]), False, color)
@@ -157,7 +172,7 @@ class Grid:
                 else:
                     color = (0, 51, 102)
 
-                if cell_value != self.__test_grid[y][x]:
+                if self.game_over and cell_value != self.__test_grid[y][x] and not self.win:
                     color = (255, 0, 0)
 
                 text_surface = self.game_font.render(str(cell_value), False, color)
@@ -188,9 +203,8 @@ class Grid:
     def submit_bomb_answer(self):
         self.bomb_cell_correct.clear()
 
-        try:
-            entered = [int(a) for a in self.bomb_answers]
-        except ValueError:
+        entered = self.bomb_select.bomb_answers
+        if 0 in entered:
             self.bomb_feedback = "Ievadiet abus skaitļus!"
             self.bomb_feedback_color = (178, 102, 255)
             return
@@ -216,36 +230,19 @@ class Grid:
                 self.win = True
                 self.restart_allowed = True
 
-    def draw_all(self, pg, surface):
+    def draw_all(self, pg, surface, scroll_offset: int = 0):
+        self.selection.scroll_offset = scroll_offset
+        self.bomb_select.scroll_offset = scroll_offset
         self.__draw_lines(pg, surface)
         self.__draw_numbers(surface)
         self.selection.draw(pg, surface)
-
-        info_font = self.game_font
-
-        grid_pixel_size = self.cell_size * 9
-        x = 20
-        y = grid_pixel_size + 10
-
-        surface.blit(info_font.render("Bumbas:", False, (0, 0, 0)), (x, y))
-
-        enter_label = "Ievadiet bumbu numurus (TAB, lai pārietu uz otro):"
-        enter_label_x = x
-        enter_label_y = y + 35
-        surface.blit(info_font.render(enter_label, False, (0, 0, 0)),
-                    (enter_label_x, enter_label_y))
-
-        label_width, _ = info_font.size(enter_label)
-        for i, val in enumerate(self.bomb_answers):
-            color = (0, 0, 0) if i == self.active_bomb_input else (0, 51, 102)
-            bomb_x = enter_label_x + label_width + 10 + i * 120
-            bomb_y = enter_label_y
-            surface.blit(info_font.render(f"B{i+1}:{val or '_'}", False, color), (bomb_x, bomb_y))
+        self.bomb_select.draw(pg, surface)
 
         if self.bomb_feedback:
+            info_font = self.game_font
             surface.blit(
                 info_font.render(self.bomb_feedback, False, self.bomb_feedback_color),
-                (x, enter_label_y + 40)
+                (0, 910)
             )
 
 
@@ -256,6 +253,10 @@ class Grid:
         self.grid[y][x] = value
 
     def check_win(self):
+        self.submit_bomb_answer()
         sudoku_complete = self.check_grids()
         bombs_correct = all(self.bomb_cell_correct.get(b, False) for b in self.bombs)
         self.win = sudoku_complete and bombs_correct
+        self.game_over = True
+        if self.win:
+            self.restart_allowed = True

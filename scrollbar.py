@@ -36,6 +36,15 @@ class ScrollBar:
             )
             self.scroll_percent = (self.thumb_y - self.y) / (self.h - self.thumb_h)
 
+        if event.type == pygame.MOUSEWHEEL:
+            scroll_step = 30
+            self.thumb_y = max(
+                self.y,
+                min(self.thumb_y - event.y * scroll_step,
+                    self.y + self.h - self.thumb_h)
+            )
+            self.scroll_percent = (self.thumb_y - self.y) / (self.h - self.thumb_h)
+
     def draw(self, screen):
         pygame.draw.rect(screen, self.thumb_color,
                          (self.x, self.thumb_y, self.w, self.thumb_h))
