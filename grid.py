@@ -40,7 +40,7 @@ def create_grid(sub_grid: int) -> list[list]:
 
 def remove_numbers(grid: list[list]) -> None:
     num_of_cells = GRID_SIZE * GRID_SIZE
-    empties = num_of_cells * 3 // 9
+    empties = num_of_cells * 3 // 30
     for i in sample(range(num_of_cells), empties):
         grid[i // GRID_SIZE][i % GRID_SIZE] = 0
 
@@ -257,6 +257,9 @@ class Grid:
         sudoku_complete = self.check_grids()
         bombs_correct = all(self.bomb_cell_correct.get(b, False) for b in self.bombs)
         self.win = sudoku_complete and bombs_correct
+<<<<<<< HEAD
         self.game_over = True
+=======
+>>>>>>> 254410faa75ee0dac58a2aaed6528a0b50e67e8c
         if self.win:
             self.restart_allowed = True
