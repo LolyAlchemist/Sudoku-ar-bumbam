@@ -40,7 +40,7 @@ def create_grid(sub_grid: int) -> list[list]:
 
 def remove_numbers(grid: list[list]) -> None:
     num_of_cells = GRID_SIZE * GRID_SIZE
-    empties = num_of_cells * 3 // 7
+    empties = num_of_cells * 3 // 30
     for i in sample(range(num_of_cells), empties):
         grid[i // GRID_SIZE][i % GRID_SIZE] = 0
 
@@ -89,8 +89,12 @@ class Grid:
         self.bomb_feedback = ""
 
     def check_grids(self):
+        bomb_set = set(self.bombs)
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
+                # Skip bomb cells - they're validated separately
+                if (y, x) in bomb_set:
+                    continue
                 if self.grid[y][x] != self.__test_grid[y][x]:
                     return False
         return True
