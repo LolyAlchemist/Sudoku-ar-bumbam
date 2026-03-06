@@ -92,7 +92,6 @@ class Grid:
         bomb_set = set(self.bombs)
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
-                # Skip bomb cells - they're validated separately
                 if (y, x) in bomb_set:
                     continue
                 if self.grid[y][x] != self.__test_grid[y][x]:

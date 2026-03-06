@@ -1,8 +1,8 @@
 
 class BombSelect:
     """Two horizontal rows of 1-9 buttons below the sudoku grid for selecting bomb answers.
-    Layout: B1> [1][2][3][4][5][6][7][8][9]
-            B2> [1][2][3][4][5][6][7][8][9]
+    Layout: B1-> [1][2][3][4][5][6][7][8][9]
+            B2->[1][2][3][4][5][6][7][8][9]
     """
 
     BTN_W = 80
@@ -33,7 +33,7 @@ class BombSelect:
             label_text = self.my_font.render(f"B{bi+1}>", False, label_color)
             surface.blit(label_text, (0, y + 15))
 
-            # Buttons
+
             for index, pos in enumerate(self._row_positions(bi)):
                 btn_label = str(index + 1)
                 pygame.draw.rect(surface, self.color_normal,
