@@ -1,5 +1,3 @@
-# ok
-
 # Projekta darbs
 **Spēles koncepta realizācija izmantojot python.**
 - Sudoku ar bumbam
@@ -19,17 +17,14 @@ Noteikumi:
 
 * Katra bumba ir apzīmēta ar B1 vai B2. 
 
-* Zem Sudoku spēles lauka atrodas ievades lauks bumbu cipariem. 
+* Pie Sudoku spēles lauka atrodas ievades lauks bumbu cipariem. 
 
 * Spēlētājam jāievada skaitlis no 1 līdz 9, kas atbilst bumbas atrašanās vietai attiecīgajā 3×3 apakšrežģī. 
 
-* Lai pārslēgtos starp bumbām (B1 un B2), jānospiež TAB taustiņš. 
-
-* Lai pārbaudītu ievadītos rezultātus, jānospiež ENTER taustiņš. 
 
 Zaudējuma nosacijumi: 
 
-* Spēle tiek zaudēta, ja nav ieavadītas bumbas, abas vai viena ir nepareiza. 
+* Spēle tiek zaudēta, ja nav pareizi ievadītas bumbas, sudoku laukā ir nepareizi ievadīti skaitļi. 
 
 Uzvaras nosacijumi: 
 
