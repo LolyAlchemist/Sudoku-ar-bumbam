@@ -126,8 +126,8 @@ while run:
     "* Spēle tiek zaudēta, ja nav pareizi ieavadīta vismas 1 bumba, sudoku laukā ir nepareizi ievadīti skaitļi.",
     "",
     "UZVARAS NOSACĪJUMI:",
-    "* Spēle tiek uzvarēta, ja visi sudoku lauciņi ir aizpildīti pareizi",
-    "* un ir ievadīti pareizie cipari zem abām bumbām."
+    "* Spēle tiek uzvarēta, ja visi sudoku lauciņi ir aizpildīti pareizi,"
+    " un ir ievadīti pareizie cipari zem abām bumbām."
 ]
 
 
