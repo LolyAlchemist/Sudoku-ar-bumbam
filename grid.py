@@ -74,6 +74,13 @@ class Grid:
         self.bomb_cell_correct = {}
         self.bomb_feedback = ""
         self.bomb_feedback_color = (255, 255, 255)
+        
+        self.saved_grid = None
+        self.saved_test_grid = None
+        self.saved_bombs = None
+        self.saved_occupied = None
+        self.saved_bomb_answers = None
+        self.saved_selection_number = 0
 
     def restart(self) -> None:
         self.grid = create_grid(SUB_GRID_SIZE)
@@ -87,6 +94,11 @@ class Grid:
         self.bomb_select.reset()
         self.bomb_cell_correct.clear()
         self.bomb_feedback = ""
+        self.saved_grid = None
+        self.saved_test_grid = None
+        self.saved_bombs = None
+        self.saved_occupied = None
+        self.saved_bomb_answers = None
 
     def check_grids(self):
         bomb_set = set(self.bombs)
@@ -121,10 +133,6 @@ class Grid:
         self.selection.button_clicked(x, y)
 
         bomb_both_set = self.bomb_select.button_clicked(x, y)
-        
-        bombs_answered = self.bomb_select.bomb_answers[0] != 0 and self.bomb_select.bomb_answers[1] != 0
-        if bombs_answered and self.is_grid_full():
-            self.check_win()
 
     def pre_occupied_cells(self) -> list[tuple]:
         occupied = []
@@ -242,10 +250,10 @@ class Grid:
         self.bomb_select.draw(pg, surface)
 
         if self.bomb_feedback:
-            info_font = self.game_font
+            feedback_font = pg.font.SysFont("Arial", 25)
             surface.blit(
-                info_font.render(self.bomb_feedback, False, self.bomb_feedback_color),
-                (0, 910)
+                feedback_font.render(self.bomb_feedback, False, self.bomb_feedback_color),
+                (800, 540)
             )
 
 
@@ -255,14 +263,49 @@ class Grid:
     def set_cell(self, x: int, y: int, value: int) -> None:
         self.grid[y][x] = value
 
-    def check_win(self):
+    def submit_answer(self):
+        """Submit answer via iesniegt button - check if all is correct"""
+        if not self.is_grid_full():
+            self.bomb_feedback = "Aizpildi visus lauciņus!"
+            self.bomb_feedback_color = (178, 102, 255)
+            return
+        
+        if self.bomb_select.bomb_answers[0] == 0 or self.bomb_select.bomb_answers[1] == 0:
+            self.bomb_feedback = "Ievadi abus bombu ciparus!"
+            self.bomb_feedback_color = (178, 102, 255)
+            return
+        
         self.submit_bomb_answer()
+        
         sudoku_complete = self.check_grids()
         bombs_correct = all(self.bomb_cell_correct.get(b, False) for b in self.bombs)
+        
         self.win = sudoku_complete and bombs_correct
-
         self.game_over = True
+        self.restart_allowed = True
+        
+        self.bomb_feedback = ""
 
+    def save_game(self):
+        """Save current game state when going back to menu"""
+        self.saved_grid = deepcopy(self.grid)
+        self.saved_test_grid = deepcopy(self.__test_grid)
+        self.saved_bombs = self.bombs.copy()
+        self.saved_occupied = self.occupied_cell_coordinates.copy()
+        self.saved_bomb_answers = self.bomb_select.bomb_answers.copy()
+        self.saved_selection_number = self.selection.selected_number
 
-        if self.win:
-            self.restart_allowed = True
+    def load_saved_game(self):
+        """Load saved game when restarting with restartet button"""
+        if self.saved_grid is not None:
+            self.grid = deepcopy(self.saved_grid)
+            self.__test_grid = deepcopy(self.saved_test_grid)
+            self.bombs = self.saved_bombs.copy()
+            self.occupied_cell_coordinates = self.saved_occupied.copy()
+            self.bomb_select.bomb_answers = self.saved_bomb_answers.copy()
+            self.selection.selected_number = self.saved_selection_number
+            
+            self.win = False
+            self.game_over = False
+            self.bomb_cell_correct.clear()
+            self.bomb_feedback = ""
