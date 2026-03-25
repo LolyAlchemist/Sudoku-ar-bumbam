@@ -3,6 +3,7 @@ from selection import SelectNumber, BombSelect
 from copy import deepcopy
 import random
 import os
+from typing import Optional
 
 
 SUB_GRID_SIZE = 3
@@ -50,8 +51,8 @@ class Grid:
         self.cell_size = 80
         self.line_coordinates = create_line_coordinates(self.cell_size)
 
-        self.grid = create_grid(SUB_GRID_SIZE)
-        self.__test_grid = deepcopy(self.grid)
+        self.grid: list[list[int]] = create_grid(SUB_GRID_SIZE)
+        self.__test_grid: list[list[int]] = deepcopy(self.grid)
 
         self.win = False
         self.restart_allowed = False
@@ -298,11 +299,23 @@ class Grid:
     def load_saved_game(self):
         """Load saved game when restarting with restartet button"""
         if self.saved_grid is not None:
-            self.grid = deepcopy(self.saved_grid)
-            self.__test_grid = deepcopy(self.saved_test_grid)
-            self.bombs = self.saved_bombs.copy()
-            self.occupied_cell_coordinates = self.saved_occupied.copy()
-            self.bomb_select.bomb_answers = self.saved_bomb_answers.copy()
+            saved_grid = self.saved_grid
+            saved_test_grid = self.saved_test_grid
+            saved_bombs = self.saved_bombs
+            saved_occupied = self.saved_occupied
+            saved_bomb_answers = self.saved_bomb_answers
+            
+            # Assert non-None for type checker
+            assert saved_test_grid is not None
+            assert saved_bombs is not None
+            assert saved_occupied is not None
+            assert saved_bomb_answers is not None
+            
+            self.grid = deepcopy(saved_grid)
+            self.__test_grid = deepcopy(saved_test_grid)
+            self.bombs = saved_bombs.copy()
+            self.occupied_cell_coordinates = saved_occupied.copy()
+            self.bomb_select.bomb_answers = saved_bomb_answers.copy()
             self.selection.selected_number = self.saved_selection_number
             
             self.win = False
