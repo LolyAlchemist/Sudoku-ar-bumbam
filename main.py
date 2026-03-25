@@ -31,14 +31,16 @@ tuto_img = pygame.image.load("pics/noteikumi.png").convert_alpha()
 back_img = pygame.image.load("pics/atpakal.png").convert_alpha()
 iesniegt_img = pygame.image.load("pics/iesniegt.png").convert_alpha()
 restartet_img = pygame.image.load("pics/restartet1.png").convert_alpha()
+iesniegt_hover_img = pygame.image.load("pics/iesniegt_hover.png").convert_alpha()
+restartet_hover_img = pygame.image.load("pics/restartet1_hover.png").convert_alpha()
 
 start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
 tuto_button = button.Button(450, 300, tuto_img, 2)
 back_button = button.Button(450, 650, back_img, 2)
 game_back_button = button.Button(0, 1020, back_img, 2)
-iesniegt_button = button.Button(800, 550, iesniegt_img, 2)
-restartet_button = button.Button(800, 650, restartet_img, 2)
+iesniegt_button = button.Button(800, 550, iesniegt_img, 2, iesniegt_hover_img, 20)
+restartet_button = button.Button(800, 650, restartet_img, 2, restartet_hover_img, 20)
 
 state = "menu"
 run = True
