@@ -8,7 +8,6 @@ os.environ["SDL_VIDEO_WINDOW_POS"] = "%d,%d" % (100, 25)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 pygame.init()
 
-# Base resolution for aspect ratio calculation
 BASE_WIDTH = 1200
 BASE_HEIGHT = 800
 
@@ -24,12 +23,10 @@ game_font2 = pygame.font.SysFont("Arial", 25)
 
 grid = Grid(pygame, game_font)
 
-# Load original images (not scaled)
 game_bg_orig = pygame.image.load("pics/Untitled46_20260113230129.png").convert()
 menu_bg_orig = pygame.image.load("pics/menu.png").convert()
 tutorial_bg_orig = pygame.image.load("pics/noteik.png").convert()
 
-# Scaled backgrounds (will be updated on resize)
 menu_bg = menu_bg_orig
 game_bg = game_bg_orig
 tutorial_bg = tutorial_bg_orig
@@ -43,7 +40,6 @@ restartet_img = pygame.image.load("pics/restartet1.png").convert_alpha()
 iesniegt_hover_img = pygame.image.load("pics/iesniegt_hover.png").convert_alpha()
 restartet_hover_img = pygame.image.load("pics/restartet1_hover.png").convert_alpha()
 
-# Scale factor for responsive sizing
 current_scale = 1.0
 
 def scale_image(img, scale):
@@ -52,14 +48,12 @@ def scale_image(img, scale):
     h = int(img.get_height() * scale)
     return pygame.transform.scale(img, (w, h))
 
-# Buttons with hover images - using scale 2 like original
 start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
 tuto_button = button.Button(450, 300, tuto_img, 2)
 back_button = button.Button(450, 650, back_img, 2)
 game_back_button = button.Button(0, 1020, back_img, 2)
 
-# iesniegt and restartet buttons with hover images
 iesniegt_button = button.Button(800, 550, iesniegt_img, 2, iesniegt_hover_img, 20)
 restartet_button = button.Button(800, 650, restartet_img, 2, restartet_hover_img, 20)
 
@@ -76,29 +70,23 @@ def handle_resize(width, height):
     global start_button, quit_button, tuto_button, back_button, game_back_button
     global iesniegt_button, restartet_button, scroll, scrollbar
     
-    # Calculate scale factor to fill the screen while maintaining aspect ratio
     scale_x = width / BASE_WIDTH
     scale_y = height / BASE_HEIGHT
-    current_scale = max(scale_x, scale_y)  # Use max to fill the screen
-    
-    # Base button scale (2.0 from original) multiplied by current_scale
+    current_scale = max(scale_x, scale_y)
+
     button_scale = 2.0 * current_scale
     
-    # Recreate screen with new size
     screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
     
-    # Scale backgrounds to fill the screen
     menu_bg = scale_image(menu_bg_orig, current_scale)
     game_bg = scale_image(game_bg_orig, current_scale)
     tutorial_bg = scale_image(tutorial_bg_orig, current_scale)
     
-    # Recreate scroll surface with proper size
+
     scroll = pygame.Surface((width, int(SCROLL_HEIGHT * current_scale)))
     
-    # Recreate scrollbar
     scrollbar = ScrollBar(int(1150 * current_scale), 0, height)
     
-    # Recreate buttons with scaled images - using original scale 2 as base
     start_button = button.Button(int(450 * current_scale), int(150 * current_scale), start_img, button_scale)
     quit_button = button.Button(int(450 * current_scale), int(450 * current_scale), quit_img, button_scale)
     tuto_button = button.Button(int(450 * current_scale), int(300 * current_scale), tuto_img, button_scale)
@@ -109,11 +97,10 @@ def handle_resize(width, height):
 
 while run:
     for event in pygame.event.get():
-        # Handle window resize
+
         if event.type == pygame.VIDEORESIZE:
             handle_resize(event.w, event.h)
         
-        # Fullscreen toggle with F11
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F11:
                 surface = pygame.display.get_surface()

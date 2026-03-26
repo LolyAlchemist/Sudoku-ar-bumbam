@@ -9,14 +9,12 @@ class Button():
         self.rect.topleft = (x, y)
         self.clicked = False
         
-        # Handle hover image
         self.hover_image = None
         if hover_image is not None:
             hover_width = hover_image.get_width()
             hover_height = hover_image.get_height()
             self.hover_image = pygame.transform.scale(hover_image, (int(hover_width * scale), int(hover_height * scale)))
         
-        # Create smaller hover rect if padding is specified
         self.hover_rect = None
         if hover_padding > 0:
             self.hover_rect = pygame.Rect(
@@ -32,11 +30,9 @@ class Button():
         if mouse_pos is None:
             mouse_pos = pygame.mouse.get_pos()
 
-        # Use hover_rect for collision if available, otherwise use full rect
         hit_rect = self.hover_rect if self.hover_rect is not None else self.rect
         
         if hit_rect.collidepoint(mouse_pos):
-            # Draw hover image if available
             if self.hover_image is not None:
                 surface.blit(self.hover_image, (self.rect.x, self.rect.y))
             else:

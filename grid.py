@@ -305,7 +305,6 @@ class Grid:
             saved_occupied = self.saved_occupied
             saved_bomb_answers = self.saved_bomb_answers
             
-            # Assert non-None for type checker
             assert saved_test_grid is not None
             assert saved_bombs is not None
             assert saved_occupied is not None
