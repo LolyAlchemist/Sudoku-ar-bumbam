@@ -116,7 +116,8 @@ while run:
         # Fullscreen toggle with F11
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F11:
-                if pygame.display.get_surface().get_flags() & pygame.FULLSCREEN:
+                surface = pygame.display.get_surface()
+                if surface and surface.get_flags() & pygame.FULLSCREEN:
                     pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), pygame.RESIZABLE)
                 else:
                     info = pygame.display.Info()
