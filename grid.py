@@ -24,7 +24,9 @@ def create_line_coordinates(cell_size: int) -> list[list[tuple]]:
 
 
 def pattern(row_num: int, col_num: int) -> int:
-    return (SUB_GRID_SIZE * (row_num % SUB_GRID_SIZE) + row_num // SUB_GRID_SIZE + col_num) % GRID_SIZE
+    return (
+        SUB_GRID_SIZE * (row_num % SUB_GRID_SIZE) + row_num // SUB_GRID_SIZE + col_num
+    ) % GRID_SIZE
 
 
 def shuffle(samp: range) -> list:
@@ -66,7 +68,9 @@ class Grid:
         self.selection = SelectNumber(pygame, self.game_font)
         self.bomb_select = BombSelect(pygame, self.game_font)
 
-        self.bomb_img = pygame.image.load(os.path.join("pics","Untitled45_20260113225822.png")).convert_alpha()
+        self.bomb_img = pygame.image.load(
+            os.path.join("pics", "Untitled45_20260113225822.png")
+        ).convert_alpha()
         self.bomb_img = pygame.transform.scale(self.bomb_img, (50, 50))
 
         self.bombs = []
@@ -75,7 +79,7 @@ class Grid:
         self.bomb_cell_correct = {}
         self.bomb_feedback = ""
         self.bomb_feedback_color = (255, 255, 255)
-        
+
         self.saved_grid = None
         self.saved_test_grid = None
         self.saved_bombs = None
@@ -155,7 +159,7 @@ class Grid:
 
                 center = (
                     x * self.cell_size + self.cell_size // 2,
-                    y * self.cell_size + self.cell_size // 2
+                    y * self.cell_size + self.cell_size // 2,
                 )
 
                 if (y, x) in self.bombs:
@@ -163,7 +167,9 @@ class Grid:
                     surface.blit(self.bomb_img, bomb_rect)
 
                     bomb_index = self.bombs.index((y, x))
-                    label = self.game_font.render(str(bomb_index + 1), False, (255, 255, 204))
+                    label = self.game_font.render(
+                        str(bomb_index + 1), False, (255, 255, 204)
+                    )
                     label_rect = label.get_rect(center=center)
                     surface.blit(label, label_rect)
 
@@ -172,8 +178,12 @@ class Grid:
                         entered = self.bomb_select.bomb_answers[bomb_index]
                         if entered and (not correct or self.win):
                             color = (0, 255, 0) if correct else (255, 0, 0)
-                            num_surface = self.game_font.render(str(self.__test_grid[y][x]), False, color)
-                            surface.blit(num_surface, num_surface.get_rect(center=center))
+                            num_surface = self.game_font.render(
+                                str(self.__test_grid[y][x]), False, color
+                            )
+                            surface.blit(
+                                num_surface, num_surface.get_rect(center=center)
+                            )
                     continue
 
                 if cell_value == 0:
@@ -184,7 +194,11 @@ class Grid:
                 else:
                     color = (0, 51, 102)
 
-                if self.game_over and cell_value != self.__test_grid[y][x] and not self.win:
+                if (
+                    self.game_over
+                    and cell_value != self.__test_grid[y][x]
+                    and not self.win
+                ):
                     color = (255, 0, 0)
 
                 text_surface = self.game_font.render(str(cell_value), False, color)
@@ -238,9 +252,11 @@ class Grid:
             self.bomb_feedback = "Abi nepareizi"
             self.bomb_feedback_color = (109, 208, 125)
 
-        if self.check_grids() and all(self.bomb_cell_correct.get(b, False) for b in self.bombs):
-                self.win = True
-                self.restart_allowed = True
+        if self.check_grids() and all(
+            self.bomb_cell_correct.get(b, False) for b in self.bombs
+        ):
+            self.win = True
+            self.restart_allowed = True
 
     def draw_all(self, pg, surface, scroll_offset: int = 0):
         self.selection.scroll_offset = scroll_offset
@@ -253,10 +269,11 @@ class Grid:
         if self.bomb_feedback:
             feedback_font = pg.font.SysFont("Arial", 25)
             surface.blit(
-                feedback_font.render(self.bomb_feedback, False, self.bomb_feedback_color),
-                (800, 540)
+                feedback_font.render(
+                    self.bomb_feedback, False, self.bomb_feedback_color
+                ),
+                (800, 520),
             )
-
 
     def get_cell(self, x: int, y: int) -> int:
         return self.grid[y][x]
@@ -270,21 +287,24 @@ class Grid:
             self.bomb_feedback = "Aizpildi visus lauciņus!"
             self.bomb_feedback_color = (178, 102, 255)
             return
-        
-        if self.bomb_select.bomb_answers[0] == 0 or self.bomb_select.bomb_answers[1] == 0:
+
+        if (
+            self.bomb_select.bomb_answers[0] == 0
+            or self.bomb_select.bomb_answers[1] == 0
+        ):
             self.bomb_feedback = "Ievadi abus bombu ciparus!"
             self.bomb_feedback_color = (178, 102, 255)
             return
-        
+
         self.submit_bomb_answer()
-        
+
         sudoku_complete = self.check_grids()
         bombs_correct = all(self.bomb_cell_correct.get(b, False) for b in self.bombs)
-        
+
         self.win = sudoku_complete and bombs_correct
         self.game_over = True
         self.restart_allowed = True
-        
+
         self.bomb_feedback = ""
 
     def save_game(self):
@@ -304,19 +324,19 @@ class Grid:
             saved_bombs = self.saved_bombs
             saved_occupied = self.saved_occupied
             saved_bomb_answers = self.saved_bomb_answers
-            
+
             assert saved_test_grid is not None
             assert saved_bombs is not None
             assert saved_occupied is not None
             assert saved_bomb_answers is not None
-            
+
             self.grid = deepcopy(saved_grid)
             self.__test_grid = deepcopy(saved_test_grid)
             self.bombs = saved_bombs.copy()
             self.occupied_cell_coordinates = saved_occupied.copy()
             self.bomb_select.bomb_answers = saved_bomb_answers.copy()
             self.selection.selected_number = self.saved_selection_number
-            
+
             self.win = False
             self.game_over = False
             self.bomb_cell_correct.clear()
