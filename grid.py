@@ -272,7 +272,7 @@ class Grid:
                 feedback_font.render(
                     self.bomb_feedback, False, self.bomb_feedback_color
                 ),
-                (800, 520),
+                (800, 535),
             )
 
     def get_cell(self, x: int, y: int) -> int:

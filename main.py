@@ -54,10 +54,10 @@ start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
 tuto_button = button.Button(450, 300, tuto_img, 2)
 back_button = button.Button(450, 650, back_img, 2)
-game_back_button = button.Button(100, 840, back_img, 2)
+game_back_button = button.Button(100, 900, back_img, 2)
 
-iesniegt_button = button.Button(720, 500, iesniegt_img, 1.5, iesniegt_hover_img, 30)
-restartet_button = button.Button(720, 575, restartet_img, 1.5, restartet_hover_img, 30)
+iesniegt_button = button.Button(800, 560, iesniegt_img, 1.5, iesniegt_hover_img, 30)
+restartet_button = button.Button(800, 640, restartet_img, 1.5, restartet_hover_img, 30)
 
 state = "menu"
 state_changed = True
@@ -103,24 +103,24 @@ def handle_resize(width, height):
         int(450 * current_scale), int(650 * current_scale), back_img, button_scale
     )
     game_back_button = button.Button(
-        int(100 * current_scale), int(840 * current_scale), back_img, button_scale
+        int(100 * current_scale), int(900 * current_scale), back_img, button_scale
     )
     small_button_scale = 1.5 * current_scale
     iesniegt_button = button.Button(
-        int(720 * current_scale),
-        int(500 * current_scale),
+        800,
+        560,
         iesniegt_img,
         small_button_scale,
         iesniegt_hover_img,
-        int(30 * current_scale),
+        30,
     )
     restartet_button = button.Button(
-        int(720 * current_scale),
-        int(575 * current_scale),
+        800,
+        640,
         restartet_img,
         small_button_scale,
         restartet_hover_img,
-        int(30 * current_scale),
+        30,
     )
 
 
@@ -217,16 +217,12 @@ while run:
             grid.restart_allowed = True
             if grid.win:
                 won_surface = game_font2.render("Tu uzvarēji!", False, (0, 255, 0))
-                scroll.blit(
-                    won_surface, (int(800 * current_scale), int(570 * current_scale))
-                )
+                scroll.blit(won_surface, (800, 535))
             else:
                 fail_surface = game_font2.render(
                     "Kļūda! - viss eksplodēja!", False, (255, 0, 0)
                 )
-                scroll.blit(
-                    fail_surface, (int(800 * current_scale), int(570 * current_scale))
-                )
+                scroll.blit(fail_surface, (800, 535))
 
         if game_back_button.draw(scroll, adjusted_mouse) and next_state is None:
             next_state = "menu"
