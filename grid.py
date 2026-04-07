@@ -49,8 +49,9 @@ def remove_numbers(grid: list[list]) -> None:
 
 
 class Grid:
-    def __init__(self, pygame, font):
-        self.cell_size = 80
+    def __init__(self, pygame, font, scale_factor=1.0):
+        self.scale_factor = scale_factor
+        self.cell_size = int(80 * scale_factor)
         self.line_coordinates = create_line_coordinates(self.cell_size)
 
         self.grid: list[list[int]] = create_grid(SUB_GRID_SIZE)
@@ -66,12 +67,16 @@ class Grid:
         self.occupied_cell_coordinates = self.pre_occupied_cells()
 
         self.selection = SelectNumber(pygame, self.game_font)
+        self.selection.surface_width = 1200
         self.bomb_select = BombSelect(pygame, self.game_font)
+        self.bomb_select.surface_width = 1200
 
         self.bomb_img = pygame.image.load(
             os.path.join("pics", "Untitled45_20260113225822.png")
         ).convert_alpha()
-        self.bomb_img = pygame.transform.scale(self.bomb_img, (50, 50))
+        self.bomb_img = pygame.transform.scale(
+            self.bomb_img, (int(50 * scale_factor), int(50 * scale_factor))
+        )
 
         self.bombs = []
         self.generate_bombs()
@@ -261,18 +266,23 @@ class Grid:
     def draw_all(self, pg, surface, scroll_offset: int = 0):
         self.selection.scroll_offset = scroll_offset
         self.bomb_select.scroll_offset = scroll_offset
+        surface_width = surface.get_width()
+        self.selection.surface_width = surface_width
+        self.bomb_select.surface_width = surface_width
         self.__draw_lines(pg, surface)
         self.__draw_numbers(surface)
         self.selection.draw(pg, surface)
         self.bomb_select.draw(pg, surface)
 
         if self.bomb_feedback:
-            feedback_font = pg.font.SysFont("Arial", 25)
+            feedback_x = int(800 * (surface_width / 1200))
+            feedback_y = int(535 * (surface_width / 1200))
+            feedback_font = pg.font.SysFont("Arial", int(25 * (surface_width / 1200)))
             surface.blit(
                 feedback_font.render(
                     self.bomb_feedback, False, self.bomb_feedback_color
                 ),
-                (800, 535),
+                (feedback_x, feedback_y),
             )
 
     def get_cell(self, x: int, y: int) -> int:
@@ -341,3 +351,18 @@ class Grid:
             self.game_over = False
             self.bomb_cell_correct.clear()
             self.bomb_feedback = ""
+
+    def update_scale(self, scale_factor, pygame_ref, base_font):
+        """Update all scaled elements when window is resized"""
+        self.scale_factor = scale_factor
+        self.cell_size = int(80 * scale_factor)
+        self.line_coordinates = create_line_coordinates(self.cell_size)
+        self.bomb_img = pygame_ref.image.load(
+            os.path.join("pics", "Untitled45_20260113225822.png")
+        ).convert_alpha()
+        self.bomb_img = pygame_ref.transform.scale(
+            self.bomb_img, (int(50 * scale_factor), int(50 * scale_factor))
+        )
+        self.game_font = pygame_ref.font.SysFont("Arial", int(50 * scale_factor))
+        self.selection.update_scale(scale_factor, pygame_ref, self.game_font)
+        self.bomb_select.update_scale(scale_factor, pygame_ref, self.game_font)

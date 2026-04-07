@@ -10,10 +10,14 @@ pygame.init()
 
 BASE_WIDTH = 1200
 BASE_HEIGHT = 800
+BASE_SCROLL_HEIGHT = 1400
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 SCROLL_HEIGHT = 1400
+
+current_scale = 1.0
+scroll_height_scaled = BASE_SCROLL_HEIGHT
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Sudoku ar bumbām")
@@ -21,7 +25,7 @@ pygame.display.set_caption("Sudoku ar bumbām")
 game_font = pygame.font.SysFont("Arial", 50)
 game_font2 = pygame.font.SysFont("Arial", 25)
 
-grid = Grid(pygame, game_font)
+grid = Grid(pygame, game_font, 1.0)
 
 game_bg_orig = pygame.image.load("pics/Untitled46_20260113230129.png").convert()
 menu_bg_orig = pygame.image.load("pics/menu.png").convert()
@@ -43,28 +47,33 @@ restartet_hover_img = pygame.image.load("pics/restartet1_hover.png").convert_alp
 current_scale = 1.0
 
 
-def scale_image(img, scale):
-    """Scale an image by the given scale factor"""
-    w = int(img.get_width() * scale)
-    h = int(img.get_height() * scale)
-    return pygame.transform.scale(img, (w, h))
+def draw_tiled_bg(surface, bg_image):
+    """Draw background image tiled to cover the surface"""
+    bg_w = bg_image.get_width()
+    bg_h = bg_image.get_height()
+    surf_w = surface.get_width()
+    surf_h = surface.get_height()
+
+    for y in range(0, surf_h, bg_h):
+        for x in range(0, surf_w, bg_w):
+            surface.blit(bg_image, (x, y))
 
 
 start_button = button.Button(450, 150, start_img, 2)
 quit_button = button.Button(450, 450, quit_img, 2)
 tuto_button = button.Button(450, 300, tuto_img, 2)
 back_button = button.Button(450, 650, back_img, 2)
-game_back_button = button.Button(100, 900, back_img, 2)
+game_back_button = button.Button(100, 950, back_img, 2)
 
-iesniegt_button = button.Button(800, 560, iesniegt_img, 1.5, iesniegt_hover_img, 30)
-restartet_button = button.Button(800, 640, restartet_img, 1.5, restartet_hover_img, 30)
+iesniegt_button = button.Button(800, 530, iesniegt_img, 1.4, iesniegt_hover_img, 26)
+restartet_button = button.Button(800, 660, restartet_img, 1.4, restartet_hover_img, 26)
 
 state = "menu"
 state_changed = True
 run = True
 
-scrollbar = ScrollBar(1150, 0, SCREEN_HEIGHT)
-scroll = pygame.Surface((SCREEN_WIDTH, SCROLL_HEIGHT))
+scrollbar = ScrollBar(1150, 0, SCREEN_HEIGHT, 120, (0, 0, 0), 1.0)
+scroll = pygame.Surface((SCREEN_WIDTH, int(1000 * current_scale)))
 scroll_offset = 0
 
 
@@ -73,22 +82,20 @@ def handle_resize(width, height):
     global current_scale, screen, menu_bg, game_bg, tutorial_bg
     global start_button, quit_button, tuto_button, back_button, game_back_button
     global iesniegt_button, restartet_button, scroll, scrollbar
+    global game_font, game_font2
 
     scale_x = width / BASE_WIDTH
     scale_y = height / BASE_HEIGHT
-    current_scale = max(scale_x, scale_y)
-
-    button_scale = 2.0 * current_scale
+    current_scale = scale_x
 
     screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
-    menu_bg = scale_image(menu_bg_orig, current_scale)
-    game_bg = scale_image(game_bg_orig, current_scale)
-    tutorial_bg = scale_image(tutorial_bg_orig, current_scale)
+    game_font = pygame.font.SysFont("Arial", int(50 * current_scale))
+    game_font2 = pygame.font.SysFont("Arial", int(25 * current_scale))
 
-    scroll = pygame.Surface((width, int(SCROLL_HEIGHT * current_scale)))
+    grid.update_scale(current_scale, pygame, game_font)
 
-    scrollbar = ScrollBar(int(1150 * current_scale), 0, height)
+    button_scale = 2.0 * current_scale
 
     start_button = button.Button(
         int(450 * current_scale), int(150 * current_scale), start_img, button_scale
@@ -103,24 +110,36 @@ def handle_resize(width, height):
         int(450 * current_scale), int(650 * current_scale), back_img, button_scale
     )
     game_back_button = button.Button(
-        int(100 * current_scale), int(900 * current_scale), back_img, button_scale
+        int(100 * current_scale), int(950 * current_scale), back_img, button_scale
     )
-    small_button_scale = 1.5 * current_scale
+    small_button_scale = 1.4 * current_scale
     iesniegt_button = button.Button(
-        800,
-        560,
+        int(800 * current_scale),
+        int(530 * current_scale),
         iesniegt_img,
         small_button_scale,
         iesniegt_hover_img,
-        30,
+        int(26 * current_scale),
     )
     restartet_button = button.Button(
-        800,
-        640,
+        int(800 * current_scale),
+        int(660 * current_scale),
         restartet_img,
         small_button_scale,
         restartet_hover_img,
-        30,
+        int(26 * current_scale),
+    )
+
+    max_scroll_height = int(1100 * current_scale)
+    scroll = pygame.Surface((width, max_scroll_height))
+
+    scrollbar = ScrollBar(
+        int(1150 * current_scale),
+        0,
+        height,
+        int(120 * current_scale),
+        (0, 0, 0),
+        current_scale,
     )
 
 
@@ -140,6 +159,7 @@ while run:
 
         if event.type == pygame.VIDEORESIZE:
             handle_resize(event.w, event.h)
+            pygame.display.flip()
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F11:
@@ -185,11 +205,11 @@ while run:
         break
 
     scroll_offset = int(
-        scrollbar.scroll_percent * (scroll.get_height() - SCREEN_HEIGHT)
+        scrollbar.scroll_percent * max(0, scroll.get_height() - screen.get_height())
     )
 
     if state == "menu":
-        screen.blit(menu_bg, (0, 0))
+        draw_tiled_bg(screen, menu_bg_orig)
         if start_button.draw(screen) and next_state is None:
             next_state = "game"
             grid.saved_grid = None
@@ -203,7 +223,10 @@ while run:
             run = False
 
     elif state == "game":
-        scroll.blit(game_bg, (0, 0))
+        scroll = pygame.Surface(
+            (screen.get_width(), max(screen.get_height(), int(1100 * current_scale)))
+        )
+        draw_tiled_bg(scroll, game_bg_orig)
         grid.draw_all(pygame, scroll, scroll_offset)
 
         adjusted_mouse = (
@@ -215,24 +238,47 @@ while run:
 
         if grid.game_over:
             grid.restart_allowed = True
+            sw = screen.get_width()
             if grid.win:
                 won_surface = game_font2.render("Tu uzvarēji!", False, (0, 255, 0))
-                scroll.blit(won_surface, (800, 535))
+                scroll.blit(
+                    won_surface, (int(800 * (sw / 1200)), int(535 * (sw / 1200)))
+                )
             else:
                 fail_surface = game_font2.render(
                     "Kļūda! - viss eksplodēja!", False, (255, 0, 0)
                 )
-                scroll.blit(fail_surface, (800, 535))
+                scroll.blit(
+                    fail_surface, (int(800 * (sw / 1200)), int(535 * (sw / 1200)))
+                )
 
         if game_back_button.draw(scroll, adjusted_mouse) and next_state is None:
             next_state = "menu"
             grid.save_game()
 
         screen.blit(scroll, (0, -scroll_offset))
-        scrollbar.draw(screen)
+
+        sw = scroll.get_width()
+        scrollbar_x = sw - int(40 * (sw / 1200))
+        current_scrollbar = ScrollBar(
+            scrollbar_x,
+            0,
+            screen.get_height(),
+            int(120 * (sw / 1200)),
+            (0, 0, 0),
+            sw / 1200,
+        )
+        current_scrollbar.scroll_percent = scrollbar.scroll_percent
+        current_scrollbar.thumb_y = scrollbar.y + scrollbar.scroll_percent * max(
+            0, current_scrollbar.h - current_scrollbar.thumb_h
+        )
+        current_scrollbar.draw(screen)
 
     elif state == "tutorial":
-        scroll.blit(tutorial_bg, (0, 0))
+        scroll = pygame.Surface(
+            (screen.get_width(), max(screen.get_height(), int(1000 * current_scale)))
+        )
+        draw_tiled_bg(scroll, tutorial_bg_orig)
         y = int(20 * current_scale)
         font = pygame.font.SysFont("Arial", int(25 * current_scale))
         text = [
@@ -267,7 +313,22 @@ while run:
             next_state = "menu"
 
         screen.blit(scroll, (0, -scroll_offset))
-        scrollbar.draw(screen)
+
+        sw = scroll.get_width()
+        scrollbar_x = sw - int(40 * (sw / 1200))
+        tuto_scrollbar = ScrollBar(
+            scrollbar_x,
+            0,
+            screen.get_height(),
+            int(120 * (sw / 1200)),
+            (0, 0, 0),
+            sw / 1200,
+        )
+        tuto_scrollbar.scroll_percent = scrollbar.scroll_percent
+        tuto_scrollbar.thumb_y = scrollbar.y + scrollbar.scroll_percent * max(
+            0, tuto_scrollbar.h - tuto_scrollbar.thumb_h
+        )
+        tuto_scrollbar.draw(screen)
 
     if next_state is not None:
         state = next_state
