@@ -266,18 +266,17 @@ class Grid:
     def draw_all(self, pg, surface, scroll_offset: int = 0):
         self.selection.scroll_offset = scroll_offset
         self.bomb_select.scroll_offset = scroll_offset
-        surface_width = surface.get_width()
-        self.selection.surface_width = surface_width
-        self.bomb_select.surface_width = surface_width
+        self.selection.scale_factor = self.scale_factor
+        self.bomb_select.scale_factor = self.scale_factor
         self.__draw_lines(pg, surface)
         self.__draw_numbers(surface)
         self.selection.draw(pg, surface)
         self.bomb_select.draw(pg, surface)
 
         if self.bomb_feedback:
-            feedback_x = int(800 * (surface_width / 1200))
-            feedback_y = int(535 * (surface_width / 1200))
-            feedback_font = pg.font.SysFont("Arial", int(25 * (surface_width / 1200)))
+            feedback_x = int(800 * self.scale_factor)
+            feedback_y = int(535 * self.scale_factor)
+            feedback_font = pg.font.SysFont("Arial", int(25 * self.scale_factor))
             surface.blit(
                 feedback_font.render(
                     self.bomb_feedback, False, self.bomb_feedback_color

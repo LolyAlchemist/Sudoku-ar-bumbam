@@ -23,18 +23,15 @@ class BombSelect:
         self.LABEL_W = 100
         self.ROW_Y = [780, 870]
 
-    def _row_positions(self, row: int, surface_width: int) -> list[tuple]:
+    def _row_positions(self, row: int, surface_width: int = 0) -> list[tuple]:
         base_y_positions = [780, 870]
-        scale = surface_width / 1200
-        grid_width = 9 * int(80 * scale)
+        scale = getattr(self, "scale_factor", self.surface_width / 1200)
         start_x = int(100 * scale)
         y = int(base_y_positions[row] * scale)
         return [(start_x + i * int(80 * scale), y) for i in range(9)]
 
     def draw(self, pygame, surface):
-        surface_width = surface.get_width()
-        self.surface_width = surface_width
-        scale = surface_width / 1200
+        scale = getattr(self, "scale_factor", self.surface_width / 1200)
         self.BTN_W = int(80 * scale)
         self.BTN_H = int(80 * scale)
         self.LABEL_W = int(100 * scale)
@@ -49,7 +46,7 @@ class BombSelect:
 
             surface.blit(label_text, (int(20 * scale), y + int(15 * scale)))
 
-            for index, pos in enumerate(self._row_positions(bi, surface_width)):
+            for index, pos in enumerate(self._row_positions(bi)):
                 btn_label = str(index + 1)
                 pygame.draw.rect(
                     surface,
@@ -94,7 +91,7 @@ class BombSelect:
 
     def button_clicked(self, mouse_x: int, mouse_y: int) -> bool:
         for bi in range(2):
-            for index, pos in enumerate(self._row_positions(bi, self.surface_width)):
+            for index, pos in enumerate(self._row_positions(bi)):
                 if self._on_button(mouse_x, mouse_y, pos):
                     self.bomb_answers[bi] = index + 1
                     self.active_bomb = 1 - bi
@@ -140,44 +137,27 @@ class SelectNumber:
 
         self.surface_width = 1200
 
-    def _calc_positions(self, surface_width: int) -> list[tuple]:
-        grid_width = 2 * self.btn_w + 90
-        start_x = (surface_width - grid_width) // 2 + 800 - (surface_width - 1200) // 2
-        start_x = int(800 * (surface_width / 1200))
+    def _calc_positions(self) -> list[tuple]:
+        scale = getattr(self, "scale_factor", self.surface_width / 1200)
+        start_x = int(800 * scale)
         return [
-            (start_x, int(50 * (surface_width / 1200))),
-            (
-                start_x + int(90 * (surface_width / 1200)),
-                int(50 * (surface_width / 1200)),
-            ),
-            (start_x, int(150 * (surface_width / 1200))),
-            (
-                start_x + int(90 * (surface_width / 1200)),
-                int(150 * (surface_width / 1200)),
-            ),
-            (start_x, int(250 * (surface_width / 1200))),
-            (
-                start_x + int(90 * (surface_width / 1200)),
-                int(250 * (surface_width / 1200)),
-            ),
-            (start_x, int(350 * (surface_width / 1200))),
-            (
-                start_x + int(90 * (surface_width / 1200)),
-                int(350 * (surface_width / 1200)),
-            ),
-            (start_x, int(450 * (surface_width / 1200))),
-            (
-                start_x + int(90 * (surface_width / 1200)),
-                int(450 * (surface_width / 1200)),
-            ),
+            (start_x, int(50 * scale)),
+            (start_x + int(90 * scale), int(50 * scale)),
+            (start_x, int(150 * scale)),
+            (start_x + int(90 * scale), int(150 * scale)),
+            (start_x, int(250 * scale)),
+            (start_x + int(90 * scale), int(250 * scale)),
+            (start_x, int(350 * scale)),
+            (start_x + int(90 * scale), int(350 * scale)),
+            (start_x, int(450 * scale)),
+            (start_x + int(90 * scale), int(450 * scale)),
         ]
 
     def draw(self, pygame, surface):
-        surface_width = surface.get_width()
-        self.surface_width = surface_width
-        self.btn_positions = self._calc_positions(surface_width)
-        self.btn_w = int(80 * (surface_width / 1200))
-        self.btn_h = int(80 * (surface_width / 1200))
+        scale = getattr(self, "scale_factor", self.surface_width / 1200)
+        self.btn_positions = self._calc_positions()
+        self.btn_w = int(80 * scale)
+        self.btn_h = int(80 * scale)
 
         for index, pos in enumerate(self.btn_positions):
             is_eraser = index == 9
